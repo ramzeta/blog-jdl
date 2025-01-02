@@ -1,0 +1,69 @@
+application {
+  config {
+    baseName myApp
+    applicationType gateway
+    packageName com.myapp
+    authenticationType oauth2
+    databaseType sql
+    devDatabaseType h2Memory
+    prodDatabaseType mysql
+    buildTool maven
+    skipClient true
+    clientFramework angular
+    serviceDiscoveryType eureka
+  }
+  entities User, Role, Permission, Categoria, Post, ImagenPost
+}
+
+entity User {
+  username String required unique,
+  email String required unique,
+  password String,
+  activated Boolean required,
+  firstName String,
+  lastName String,
+  imageUrl String
+}
+
+entity Role {
+  name String required unique,
+  description String
+}
+
+entity Permission {
+  name String required unique,
+  description String
+}
+
+entity Categoria {
+  nombre String required,
+  descripcion TextBlob
+}
+
+entity Post {
+  titulo String required,
+  contenido TextBlob,
+  fechaCreacion Instant required,
+  autor String required
+}
+
+entity ImagenPost {
+  urlImagen String required,
+  descripcion String
+}
+
+relationship ManyToMany {
+  User{roles} to Role{users},
+  Role{permissions} to Permission{roles}
+}
+
+relationship ManyToOne {
+  Post{categoria} to Categoria,
+  ImagenPost{post} to Post
+}
+
+paginate Categoria, Post, ImagenPost with infinite-scroll
+service Categoria, Post, ImagenPost, User, Role, Permission with serviceClass
+dto Categoria, Post, ImagenPost, User, Role, Permission with mapstruct
+
+microservice Categoria, Post, ImagenPost, User, Role, Permission with myApp1
